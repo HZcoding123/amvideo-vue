@@ -13,7 +13,7 @@ import VueCookies from 'vue-cookies'
 app.config.globalProperties.$cookies = VueCookies;
 
 // 全局配置setttings
-import settings from "./assets/js/settings"
+import settings from "./assets/js/settings";
 app.config.globalProperties.$settings = settings;
 
 // 配置element-ui
@@ -21,8 +21,14 @@ import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 app.use(ElementPlus)
 
+import * as Icons from '@element-plus/icons-vue'
+Object.keys(Icons).forEach(key => {
+    app.component(key, Icons[key])
+})
+
 //配置bootstrap
-import 'bootstrap'
-import 'bootstrap/dist/css/bootstrap-theme.min.css'
+import $ from 'jquery'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap/dist/js/bootstrap.min.js'
 
 app.use(store).use(router).mount('#app')
