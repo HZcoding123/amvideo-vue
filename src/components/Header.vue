@@ -9,12 +9,10 @@
       </div>
       <!-- Collect the nav links, forms, and other content for toggling -->
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-        <ul class="nav navbar-nav">
-          <li><a href="#">首页</a></li>
-          <li><a href="#">生活</a></li>
-          <li><a href="#">科技</a></li>
-          <li><a href="#">娱乐</a></li>
-          <li><a href="#">汽车</a></li>
+        <ul class="nav navbar-nav" v-if="is_categoryShow">
+          <li v-for="item in title">
+            <span @click="page(item['id'])" :class="{active1:is_categoryClick[item['id']] === true, active2:is_categoryClick[item['id']] === false}">{{item['name']}}</span>
+          </li>
         </ul>
         <form class="navbar-form navbar-left">
           <div class="form-group">
@@ -45,6 +43,7 @@
 <script>
 import Login from "./Login";
 import Register from "./Register";
+import axios from "axios";
 export default {
   name: "Header",
   components: {
@@ -60,12 +59,31 @@ export default {
       username: '',
       token: '',
       icon: '',
+      title: [],
+      is_categoryShow: false,
+      is_categoryClick: [false,],
+      last_click: 0,
+      default_cate:0,
     }
   },
   created() {
     this.username = this.$cookies.get('username');
     this.token = this.$cookies.get('token');
     this.icon = this.$cookies.get('icon');
+  },
+  beforeCreate() {
+    // 组件一创建之前就发送请求给后台获取分类名称
+    axios.get(this.$settings.base_url + '/video/category/').then(response=>{
+      this.title = response.data['data'];
+      this.is_categoryShow = true;
+      for (let i = 0; i < this.title.length; i++) { // 遍历拿到的数据，往记录是否点击分类按钮的列表里面写入对应的false标记
+        this.is_categoryClick[i+1] = false
+        this.is_categoryClick[this.default_cate] = true
+        if (this.default_cate !== 0){
+          this.last_click = this.default_cate;
+        }
+      }
+    })
   },
   methods: {
     close_login() {
@@ -95,7 +113,17 @@ export default {
         this.is_register = false;
         this.is_login = true;
       }
-    }
+    },
+    page(number){
+      this.is_categoryClick[this.last_click] = false  // 将最后一个点击的分离按钮变成否
+      this.is_categoryClick[number] = true   // 将正在点击的分类按钮变成真
+      this.last_click = number  // 记录最后一次点击的是哪个按钮
+      // 子组件传值给父组件
+      this.$emit('change_page', number)
+    },
+    default_pick(type){
+      this.default_cate = type
+    },
   }
 }
 </script>
@@ -136,5 +164,32 @@ export default {
   border-radius: 50%;
   height: 40px;
   width: 40px;
+}
+
+.navbar{
+  margin-bottom: 0px;
+}
+
+.active1{
+  color: #ffc210;
+  margin-left: 10px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.active2{
+  color: white;
+  margin-left: 10px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.active2:hover{
+  color: #ffc210;
+}
+
+.navbar-nav{
+  position: relative;
+  top: 13px;
 }
 </style>
