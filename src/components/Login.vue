@@ -137,7 +137,7 @@ export default {
       this.is_login = true;
     },
     login_pwd() {
-      if(!this.mobile || !this.password){
+      if(!this.username || !this.password){
         this.$message({
           message: '账号密码不能为空',
           type: 'warning',

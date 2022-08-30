@@ -20,7 +20,7 @@
     </video-player>
   </div>
   <br><br><br><br>
-  <comment/>
+  <comment @comment_login_success="comment_login_success" :video-id="id"/>
   <Footer class="foot"/>
 
 </template>
@@ -81,6 +81,9 @@ export default {
   methods:{
     send_header(){
       this.$refs.head.default_pick(this.type);
+    },
+    comment_login_success(){  // 由评论组件登录成功后回调
+      this.$refs.head.login_success()
     }
   },
 }
